@@ -173,6 +173,7 @@ func main() {
 	models.Init()
 	r := mux.NewRouter()
 	routes.RegisterBookStoreRoutes(r)
+	routes.RegisterStaticRoutes(r)
 
 	const port uint16 = 8080
 	fmt.Printf("Starting server at port %d\n", port)

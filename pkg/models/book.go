@@ -60,28 +60,30 @@ func GetAllBooks() []Book {
 	return books
 }
 
-func GetBookById(id uint64) (*Book, error) {
+// GetBookById returns nil if no Book with given id is found
+func GetBookById(id uint64) *Book {
 	log.Println("GetBookById", id)
 
 	var book Book
 	if err := db.Where("ID=?", id).Find(&book).Error; err != nil {
 		log.Println(err)
-		return nil, err
+		return nil
 	}
 	if book != *new(Book) {
 		log.Println("Found", book)
-		return &book, nil
+		return &book
 	}
-	return nil, nil
+	return nil
 }
 
+// UpdateBook returns (nil, nil) if no Book with given id is found
 func UpdateBook(id uint64, newBook *Book) (*Book, error) {
 	log.Println("UpdateBook", id)
 
 	var original Book
-	book, err := GetBookById(id)
-	if book == nil || err != nil {
-		return nil, err
+	var book *Book
+	if book = GetBookById(id); book == nil {
+		return nil, nil
 	}
 	original = *book
 
@@ -97,21 +99,21 @@ func UpdateBook(id uint64, newBook *Book) (*Book, error) {
 
 	if *book != original {
 		db.Save(&book)
-		if db.Error != nil {
+		if err := db.Error; err != nil {
 			log.Println(err)
-			return nil, db.Error
+			return nil, err
 		}
 	}
 	return book, nil
 }
 
+// DeleteBook returns (nil, nil) if no Book with given id is found
 func DeleteBook(id uint64) (*Book, error) {
 	log.Println("DeleteBook", id)
 
 	var book *Book
-	var err error
-	if book, err = GetBookById(id); book == nil || err != nil {
-		return nil, err
+	if book = GetBookById(id); book == nil {
+		return nil, nil
 	}
 
 	if err := db.Where("ID=?", id).Delete(*book).Error; err != nil {

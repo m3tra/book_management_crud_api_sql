@@ -77,11 +77,7 @@ func GetBookById(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	book, err := models.GetBookById(id)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	book := models.GetBookById(id)
 	if book == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
